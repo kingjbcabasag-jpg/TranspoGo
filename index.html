@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TranspoGo — Transportation System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-bus" viewBox="0 0 24 24"><path d="M4 17h16M6 17V9a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8M6 13h12"/><circle cx="8" cy="17" r="1.6"/><circle cx="16" cy="17" r="1.6"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-swap" viewBox="0 0 24 24"><path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/></symbol>
+<symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h6a4 4 0 0 0 4-4V9M16 5H9a4 4 0 0 0-4 4v3"/></symbol>
+<symbol id="i-cash" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><path d="M4 6h8M18 6h2M4 12h2M12 12h8M4 18h10M20 18h0"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+<symbol id="i-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h0"/></symbol>
+</defs></svg>
+
+<datalist id="places"></datalist>
+<div id="toasts" aria-live="polite"></div>
+
+<section id="loginPage" class="login-page">
+  <div class="login-card" id="loginCard">
+    <div class="logo"><svg class="i"><use href="#i-bus"/></svg></div>
+    <h1>TranspoGo</h1>
+    <p class="sub c">Public transportation route information</p>
+    <form id="loginForm">
+      <div class="ig"><svg class="i lead"><use href="#i-user"/></svg><input id="username" type="text" placeholder=" " autocomplete="username" required autofocus><label for="username">Username</label></div>
+      <div class="ig"><svg class="i lead"><use href="#i-lock"/></svg><input id="password" type="password" placeholder=" " autocomplete="current-password" required><label for="password">Password</label><button type="button" class="eye" id="eye" aria-label="Show or hide password"><svg class="i"><use href="#i-eye"/></svg></button></div>
+      <p id="caps" class="warn hidden">Caps Lock is on.</p>
+      <label class="chk"><input type="checkbox" id="remember"> Stay signed in</label>
+      <p id="loginError" class="err-msg" role="alert"></p>
+      <button id="loginBtn" type="submit" class="btn pri full-w">Sign in</button>
+    </form>
+    <div class="demo">
+      <span class="lb">Demo accounts, tap to fill</span>
+      <button type="button" class="cred" data-u="admin" data-p="admin123"><b>Admin</b><code>admin / admin123</code></button>
+      <button type="button" class="cred" data-u="user" data-p="user123"><b>Passenger</b><code>user / user123</code></button>
+    </div>
+  </div>
+</section>
+
+<section id="appPage" class="hidden">
+  <header class="topbar">
+    <div class="brand"><svg class="i"><use href="#i-bus"/></svg>Transpo<span>Go</span></div>
+    <div class="ua">
+      <button class="btn icon" id="themeBtn" aria-label="Switch theme"><svg class="i"><use href="#i-moon"/></svg></button>
+      <span class="badge" id="welcomeUser">Welcome</span>
+      <button class="btn" id="logoutBtn"><svg class="i"><use href="#i-out"/></svg><span class="hide-sm">Log out</span></button>
+    </div>
+  </header>
+  <div class="layout">
+    <nav class="sidebar">
+      <button class="nav-btn active" data-page="dashboard"><svg class="i"><use href="#i-grid"/></svg><span>Dashboard</span></button>
+      <button class="nav-btn" data-page="routes"><svg class="i"><use href="#i-route"/></svg><span>Find routes</span></button>
+      <button class="nav-btn" data-page="fare"><svg class="i"><use href="#i-cash"/></svg><span>Fare calculator</span></button>
+      <button class="nav-btn admin-only hidden" data-page="manage"><svg class="i"><use href="#i-gear"/></svg><span>Manage routes</span></button>
+    </nav>
+    <main class="content">
+
+      <section id="dashboard" class="page">
+        <header class="dash-head">
+          <div class="avatar" id="greetAvatar" aria-hidden="true">A</div>
+          <div class="dash-id">
+            <div class="dash-kicker" id="greetKicker">Welcome back</div>
+            <h2 id="greet" class="dash-title">Good day</h2>
+            <p class="dash-sub" id="greetSub">Your transportation overview.</p>
+          </div>
+          <span class="role-pill" id="rolePill">Passenger</span>
+        </header>
+
+        <div id="dashPassenger" class="bento">
+          <form id="heroForm" class="tile hero">
+            <h3>Where to today?</h3>
+            <p class="hero-sub">Pick two places to see routes and fares.</p>
+            <div class="pair">
+              <input id="dFrom" list="places" placeholder="Starting point" autocomplete="off" aria-label="From">
+              <button type="button" class="btn icon sec" data-swap="dFrom,dTo" aria-label="Swap places"><svg class="i"><use href="#i-swap"/></svg></button>
+              <input id="dTo" list="places" placeholder="Destination" autocomplete="off" aria-label="To">
+            </div>
+            <button class="btn ink" type="submit"><svg class="i"><use href="#i-search"/></svg>Find routes</button>
+          </form>
+          <div class="tile stat"><span class="lb">Routes</span><div class="big" id="pRoutes">0</div></div>
+          <div class="tile stat"><span class="lb">Average fare</span><div class="big" id="pAvg">—</div></div>
+          <div class="tile wide"><span class="lb">Recent searches</span><div id="pRecent" class="chips"></div></div>
+          <div class="tile full"><span class="lb">Popular starting points</span><div id="pPop" class="chips"></div></div>
+        </div>
+
+        <div id="dashAdmin" class="adm hidden">
+          <div class="tile strip stats">
+            <div><span class="lb">Routes</span><div class="big" id="aRoutes">0</div></div>
+            <div><span class="lb">Places covered</span><div class="big" id="aPlaces">0</div></div>
+            <div><span class="lb">Average fare</span><div class="big" id="aAvg">—</div></div>
+          </div>
+          <div class="tile"><span class="lb">Routes by vehicle</span><div class="ringwrap"><div id="ring"></div><ul id="legend" class="legend"></ul></div></div>
+          <div class="tile"><span class="lb">Popular origins</span><ol id="aPop" class="pop"></ol></div>
+          <p id="aEmpty" class="note strip hidden">No routes yet. Add your first route, or load sample routes from Manage routes.</p>
+          <div class="tile strip actions">
+            <button class="btn pri" data-page="manage"><svg class="i"><use href="#i-plus"/></svg>Add route</button>
+            <button class="btn sec" data-page="routes"><svg class="i"><use href="#i-search"/></svg>Find routes</button>
+            <button class="btn sec" data-act="export"><svg class="i"><use href="#i-down"/></svg>Export routes</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="routes" class="page hidden">
+        <h2>Find routes</h2>
+        <p class="sub">Enter a starting point and a destination.</p>
+        <form id="routeForm" class="tile">
+          <div class="pair">
+            <div class="fld"><label class="lb" for="origin">From</label><input id="origin" list="places" placeholder="Starting point" autocomplete="off"></div>
+            <button type="button" class="btn icon sec" data-swap="origin,destination" aria-label="Swap places"><svg class="i"><use href="#i-swap"/></svg></button>
+            <div class="fld"><label class="lb" for="destination">To</label><input id="destination" list="places" placeholder="Destination" autocomplete="off"></div>
+          </div>
+          <button id="routeBtn" class="btn pri" type="submit"><svg class="i"><use href="#i-search"/></svg>Find route</button>
+          <button id="routeCancel" class="btn sec hidden" type="button">Cancel</button>
+        </form>
+        <div id="routeLocal"></div>
+        <div id="routeResults"><p class="note">Enter a starting point and a destination.</p></div>
+      </section>
+
+      <section id="fare" class="page hidden">
+        <h2>Fare calculator</h2>
+        <p class="sub">Estimate the fare, travel time, and total for your group.</p>
+        <form id="fareForm" class="tile">
+          <div class="pair">
+            <div class="fld"><label class="lb" for="fareOrigin">From</label><input id="fareOrigin" list="places" placeholder="Starting point" autocomplete="off"></div>
+            <button type="button" class="btn icon sec" data-swap="fareOrigin,fareDestination" aria-label="Swap places"><svg class="i"><use href="#i-swap"/></svg></button>
+            <div class="fld"><label class="lb" for="fareDestination">To</label><input id="fareDestination" list="places" placeholder="Destination" autocomplete="off"></div>
+          </div>
+          <div class="form2">
+            <div class="fld"><label class="lb" for="ptype">Passenger type</label><select id="ptype"><option>Regular</option><option>Student</option><option>Senior</option><option>PWD</option></select></div>
+            <div class="fld"><label class="lb" for="pcount">Passengers</label><input id="pcount" type="number" min="1" value="1"></div>
+          </div>
+          <button id="fareBtn" class="btn pri" type="submit"><svg class="i"><use href="#i-cash"/></svg>Calculate fare</button>
+          <button id="fareCancel" class="btn sec hidden" type="button">Cancel</button>
+        </form>
+        <div id="fareResult"><p class="note">Enter two places and calculate.</p></div>
+        <p class="note">Estimates only. Student, Senior, and PWD options take 20% off the base fare. Actual fares vary by operator.</p>
+      </section>
+
+      <section id="manage" class="page hidden">
+        <h2>Manage routes</h2>
+        <p class="sub">Add, search, export, or remove routes.</p>
+        <div class="tile">
+          <div class="form4">
+            <div class="fld"><label class="lb" for="newOrigin">Starting point</label><input id="newOrigin" list="places" autocomplete="off"></div>
+            <div class="fld"><label class="lb" for="newDestination">Destination</label><input id="newDestination" list="places" autocomplete="off"></div>
+            <div class="fld"><label class="lb" for="newVehicle">Vehicle</label><select id="newVehicle"><option>Jeepney</option><option>Bus</option><option>Tricycle</option><option>UV Express</option></select></div>
+            <div class="fld"><label class="lb" for="newFare">Fare (₱)</label><input id="newFare" type="number" min="1" step="0.01"></div>
+          </div>
+          <button id="addRouteBtn" class="btn pri"><svg class="i"><use href="#i-plus"/></svg>Add route</button>
+        </div>
+        <div class="toolbar">
+          <input id="mSearch" placeholder="Search routes" aria-label="Search routes">
+          <select id="mVeh" aria-label="Filter by vehicle"><option value="">All vehicles</option><option>Bus</option><option>Jeepney</option><option>Tricycle</option><option>UV Express</option></select>
+          <button class="btn sec" data-act="export"><svg class="i"><use href="#i-down"/></svg>Export</button>
+          <button class="btn sec" data-act="sample">Load sample routes</button>
+          <button class="btn danger" data-act="reset">Clear all</button>
+        </div>
+        <div id="adminRouteList"></div>
+      </section>
+
+    </main>
+  </div>
+</section>
+</body>
+</html>
